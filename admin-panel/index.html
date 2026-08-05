@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IVAC Visa Extension - Admin Control Panel</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+  <!-- ADMIN LOGIN MODAL -->
+  <div id="loginModal" class="modal-overlay">
+    <div class="glass-card login-card">
+      <div class="login-header">
+        <div class="logo-badge">
+          <i class="fa-solid fa-shield-halved"></i>
+        </div>
+        <h2>IVAC Admin Access</h2>
+        <p>Enter your credentials to control extension licenses</p>
+      </div>
+      <form id="loginForm">
+        <div class="form-group">
+          <label><i class="fa-solid fa-user"></i> Admin Username</label>
+          <input type="text" id="adminUser" placeholder="e.g. admin" required autocomplete="username">
+        </div>
+        <div class="form-group">
+          <label><i class="fa-solid fa-lock"></i> Admin Password</label>
+          <input type="password" id="adminPass" placeholder="••••••••" required autocomplete="current-password">
+        </div>
+        <div id="loginError" class="alert alert-danger" style="display: none;"></div>
+        <button type="submit" class="btn btn-primary btn-block">
+          <span>Sign In to Dashboard</span>
+          <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- MAIN DASHBOARD APP -->
+  <div id="app" class="dashboard-wrapper" style="display: none;">
+
+    <header class="top-nav">
+      <div class="nav-brand">
+        <div class="logo-icon">
+          <i class="fa-solid fa-bolt"></i>
+        </div>
+        <div>
+          <h1>IVAC Extension Manager</h1>
+          <span class="sub-text">User License & 1-PC Device Security Panel</span>
+        </div>
+      </div>
+      <div class="nav-actions">
+        <button class="btn btn-secondary btn-sm" id="btnChangePass">
+          <i class="fa-solid fa-key"></i> Change Admin Password
+        </button>
+        <button class="btn btn-danger-outline btn-sm" id="btnLogout">
+          <i class="fa-solid fa-right-from-bracket"></i> Logout
+        </button>
+      </div>
+    </header>
+
+    <main class="container">
+
+      <!-- STATS METRICS GRID -->
+      <section class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon icon-blue">
+            <i class="fa-solid fa-users"></i>
+          </div>
+          <div class="stat-info">
+            <span class="stat-label">Total Users</span>
+            <h3 id="statTotal">0</h3>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon icon-green">
+            <i class="fa-solid fa-circle-check"></i>
+          </div>
+          <div class="stat-info">
+            <span class="stat-label">Active Users</span>
+            <h3 id="statActive">0</h3>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon icon-red">
+            <i class="fa-solid fa-ban"></i>
+          </div>
+          <div class="stat-info">
+            <span class="stat-label">Blocked Users</span>
+            <h3 id="statBlocked">0</h3>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon icon-amber">
+            <i class="fa-solid fa-clock-rotate-left"></i>
+          </div>
+          <div class="stat-info">
+            <span class="stat-label">Expired Licenses</span>
+            <h3 id="statExpired">0</h3>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon icon-green" style="background: rgba(16,185,129,0.15);">
+            <i class="fa-solid fa-satellite-dish" style="color:#10b981;"></i>
+          </div>
+          <div class="stat-info">
+            <span class="stat-label">Online Now</span>
+            <h3 id="statOnline">0</h3>
+          </div>
+        </div>
+      </section>
+
+      <!-- CONTROL BAR: SEARCH & CREATE USER -->
+      <section class="control-bar">
+        <div class="search-box">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input type="text" id="searchInput" placeholder="Search by User ID or note...">
+        </div>
+        <button class="btn btn-primary" id="btnOpenCreateModal">
+          <i class="fa-solid fa-user-plus"></i> Create New Buyer User
+        </button>
+      </section>
+
+      <!-- USERS TABLE -->
+      <section class="table-card glass-card">
+        <div class="table-header">
+          <h2><i class="fa-solid fa-list-check"></i> Active Extension Buyers (1-PC Locked)</h2>
+          <button class="btn btn-icon btn-sm" id="btnRefresh" title="Refresh Table">
+            <i class="fa-solid fa-rotate-right"></i>
+          </button>
+        </div>
+
+        <div class="table-responsive">
+          <table class="users-table">
+            <thead>
+              <tr>
+                <th>User ID</th>
+                <th>Password</th>
+                <th>Status</th>
+                <th>1-PC Device Lock</th>
+                <th>Expiration Date</th>
+                <th>Last Active</th>
+                <th>Note</th>
+                <th class="text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="usersTableBody">
+              <!-- Dynamically Populated -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- LIVE SESSIONS TABLE -->
+      <section class="table-card glass-card" style="margin-top:18px;">
+        <div class="table-header">
+          <h2><i class="fa-solid fa-satellite-dish" style="color:#10b981;"></i> Live Sessions <span id="onlineBadge" style="font-size:12px;background:#10b981;color:#fff;padding:2px 10px;border-radius:99px;margin-left:8px;">0 Online</span></h2>
+          <button class="btn btn-icon btn-sm" id="btnRefreshSessions" title="Refresh Sessions">
+            <i class="fa-solid fa-rotate-right"></i>
+          </button>
+        </div>
+        <div class="table-responsive">
+          <table class="users-table">
+            <thead>
+              <tr>
+                <th>User ID</th>
+                <th>Device ID</th>
+                <th>IP Address</th>
+                <th>Last Active</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="sessionsTableBody">
+              <tr><td colspan="5" style="text-align:center;color:#888;padding:20px;">No active sessions yet...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- CREATE USER MODAL -->
+  <div id="createUserModal" class="modal-overlay" style="display: none;">
+    <div class="glass-card modal-card">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-user-plus"></i> Create New Extension Account</h3>
+        <button class="close-btn" id="btnCloseCreateModal">&times;</button>
+      </div>
+      <form id="createUserForm">
+        <div class="form-group">
+          <label>User ID (Buyer Username)</label>
+          <input type="text" id="newUsername" placeholder="e.g. buyer_rahim" required>
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="text" id="newPassword" placeholder="e.g. Pass@1234" required>
+        </div>
+        <div class="form-group">
+          <label>Validity Duration</label>
+          <select id="newValidityDays">
+            <option value="7">7 Days</option>
+            <option value="15">15 Days</option>
+            <option value="30" selected>30 Days (1 Month)</option>
+            <option value="60">60 Days (2 Months)</option>
+            <option value="365">365 Days (1 Year)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Notes / Customer Contact Info</label>
+          <input type="text" id="newNote" placeholder="e.g. Sold for 1000 BDT via Bkash">
+        </div>
+        <div id="createError" class="alert alert-danger" style="display: none;"></div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" id="btnCancelCreate">Cancel</button>
+          <button type="submit" class="btn btn-primary">Create Account</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- CHANGE PASSWORD MODAL -->
+  <div id="changePassModal" class="modal-overlay" style="display: none;">
+    <div class="glass-card modal-card">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-key"></i> Change Admin Password</h3>
+        <button class="close-btn" id="btnClosePassModal">&times;</button>
+      </div>
+      <form id="changePassForm">
+        <div class="form-group">
+          <label>Current Admin Password</label>
+          <input type="password" id="oldAdminPass" required>
+        </div>
+        <div class="form-group">
+          <label>New Admin Password</label>
+          <input type="password" id="newAdminPass" required>
+        </div>
+        <div id="passError" class="alert alert-danger" style="display: none;"></div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" id="btnCancelPass">Cancel</button>
+          <button type="submit" class="btn btn-primary">Update Password</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

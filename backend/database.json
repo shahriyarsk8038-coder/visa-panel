@@ -1,0 +1,33 @@
+{
+  "admin": {
+    "username": "admin",
+    "password": "admin123"
+  },
+  "users": [
+    {
+      "id": "usr_ms35g96nzkhv",
+      "username": "sv",
+      "password": "pass@123",
+      "status": "active",
+      "expireAt": "2026-09-25T11:34:30.527Z",
+      "note": "",
+      "lastLogin": "2026-07-27T12:14:21.148Z",
+      "lastIp": "::1",
+      "createdAt": "2026-07-27T11:34:30.527Z"
+    },
+    {
+      "id": "usr_ms36wolgowe6",
+      "username": "sb",
+      "password": "123456",
+      "status": "active",
+      "expireAt": "2026-08-26T12:15:16.612Z",
+      "note": "",
+      "boundDeviceId": null,
+      "boundDeviceName": null,
+      "maxDevices": 1,
+      "lastLogin": null,
+      "lastIp": null,
+      "createdAt": "2026-07-27T12:15:16.612Z"
+    }
+  ]
+}
